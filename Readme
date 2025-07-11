@@ -1,0 +1,70 @@
+LM-Based Persona Geo-Targeting Project
+1. Overview
+This project aims to leverage Large Language Model (LLM) generated data to identify high-potential geographic areas for persona-based marketing and analysis. The core objective is to translate broad, regional insights from an LLM into actionable, ZIP-code-level data that can be used by our internal scoring and activation systems.
+
+2. The Challenge: Bridging the Data Gap
+Our LLM provides valuable data, identifying geographic regions (e.g., states, provinces, metropolitan areas) that are highly relevant for specific customer personas. However, our internal systems are not equipped to use this data directly.
+
+The primary technical constraint is that our scoring and activation engine operates exclusively at the postal code (ZIP code) level.
+
+Therefore, we cannot "blend" the regional LLM data into our workflow without a crucial transformation step. This repository contains the tools and processes to bridge that gap.
+
+3. The Solution: A Two-Step Process
+To address this challenge, we have implemented a two-step data processing workflow:
+
+Intelligent Data Sampling: Before committing to a full-scale data transformation, we need to efficiently review and validate the LLM's output. A Python script (data_sampling.py) was developed to select a representative and flexible sample of the data. This allows a human reviewer to quickly assess the quality of the LLM's suggestions across different countries, personas, and confidence levels.
+
+Region-to-ZIP Imputation: Once a set of regions has been validated and approved, a second script (impute_region_to_zip.py) is used to convert the regional data into the required ZIP code format. This is the critical step that makes the LLM data compatible with our production systems.
+
+4. Project Workflow
+The end-to-end process is as follows:
+
+Data Generation: An LLM generates a dataset (Rawdatallm.csv) identifying relevant geographic regions for various personas.
+
+Sampling for Review: The data_sampling.py script is run on the raw data to produce a smaller, targeted sample (selected_samples.csv).
+
+Human Validation: A reviewer analyzes selected_samples.csv to confirm the relevance of the suggestions and compile a final list of high-potential regions to pursue.
+
+Data Imputation (Transformation): The impute_region_to_zip.py script is run on the validated regions to generate a list of corresponding ZIP codes.
+
+Activation: The final ZIP-code-level data is ingested into our production scoring engine for targeted campaigns.
+
+5. Scripts in This Repository
+data_sampling.py
+Purpose: To select a representative sample from the raw LLM data for efficient human review.
+
+Logic:
+
+Groups data by Country and Persona Name.
+
+For each group, it attempts to find one sample for each target confidence level (e.g., high, medium, low).
+
+Uses a flexible matching algorithm to find the closest available data point if an exact match for a confidence score isn't found.
+
+Input: Rawdatallm.csv
+
+Output: selected_samples.csv
+
+impute_region_to_zip.py
+Purpose: To convert validated, regional-level data into ZIP-code-level data.
+
+Status: Under Review. This script needs to be finalized and tested before being used on the full dataset.
+
+Input: A list of validated regions (from the review of selected_samples.csv).
+
+Output: A list of ZIP codes ready for the production system.
+
+6. How to Use
+Prerequisites
+Python 3.x
+
+Pandas library (pip install pandas)
+
+Running the Sampling Script
+Place your raw data file, named Rawdatallm.csv, in the root directory of this repository.
+
+Run the script from your terminal:
+
+python data_sampling.py
+
+Upon completion, a new file named selected_samples.csv will be created in the same directory. This file is ready for your review.
