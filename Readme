@@ -29,3 +29,11 @@ Sample: Run python data_sampling.py.
 Review: Audit selected_samples.csv to ensure the LLM's logic is sound.
 
 Export: Run the imputation script to generate the final ZIP list for activation.
+graph TD
+    A[LLM Raw Data] -->|Regional Level| B(Data Sampling Script)
+    B -->|Review Slice| C{Human Audit}
+    C -->|Validated Regions| D(ZIP Imputation Script)
+    D -->|Postal Level| E[Production Scoring Engine]
+    
+    style C fill:#f96,stroke:#333,stroke-width:2px
+    style E fill:#bbf,stroke:#333,stroke-width:2px
