@@ -1,39 +1,23 @@
-LM-Based Persona Geo-Targeting
-🎯 The Problem: The "Granularity Gap"
-LLMs provide high-value marketing insights at a Regional level (e.g., "Tech-savvy parents in Northern California"). However, our activation systems only speak ZIP Code.
+Quick Start
+bash# 1. Place your regional LLM output in the input file
+#    Expected format: persona, region, confidence level
 
-We cannot use LLM data directly because it is too broad for our postal-code-level scoring engine. This project provides the "translation layer" to make LLM insights actionable.
+# 2. Generate a review sample
+python data_sampling.py
 
-🛠️ The Solution: "Verify-then-Amplify"
-We bridge the gap using a two-step methodology to ensure data quality before it hits production.
+# 3. Audit the sample output
+#    Review sampled_output.csv — validate that LLM logic is sound
 
-1. Sampling (The Filter)
-data_sampling.py extracts a representative "DNA slice" of the raw LLM data.
+# 4. Run imputation on validated regions
+python impute_region_to_zip.py
+#    → Outputs a ZIP-level file ready for activation
 
-Goal: Instead of auditing 10,000 rows, a human reviews a small, smart sample.
+What this demonstrates
 
-Logic: Groups by Persona and Country, then selects samples across Confidence Levels (High/Med/Low).
+Practical AI integration: Turning generative AI outputs into structured, production-ready data
+Human-in-the-loop design: Quality gate before any LLM-derived data reaches downstream systems
+Lightweight architecture: Two focused scripts, no heavy dependencies — easy to adapt or extend
 
-2. Imputation (The Multiplier)
-impute_region_to_zip.py transforms approved regions into granular data.
 
-Goal: Expand a single region (e.g., "Austin, TX") into its constituent ZIP codes.
 
-Outcome: A clean file ready for the production scoring engine.
-
-🚀 Quick Start
-Input: Place your raw LLM data in Rawdatallm.csv.
-
-Sample: Run python data_sampling.py.
-
-Review: Audit selected_samples.csv to ensure the LLM's logic is sound.
-
-Export: Run the imputation script to generate the final ZIP list for activation.
-graph TD
-    A[LLM Raw Data] -->|Regional Level| B(Data Sampling Script)
-    B -->|Review Slice| C{Human Audit}
-    C -->|Validated Regions| D(ZIP Imputation Script)
-    D -->|Postal Level| E[Production Scoring Engine]
-    
-    style C fill:#f96,stroke:#333,stroke-width:2px
-    style E fill:#bbf,stroke:#333,stroke-width:2px
+Note: This is a portfolio prototype. Input/output filenames, internal system references, and proprietary data have been removed. The methodology and pipeline structure are illustrative.
